@@ -3,14 +3,18 @@ import requests
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF, renderPM
 
-def get_set_image_each_set():
+def make_set_image_each_set():
     """
     Gets the svg for all sets from the api and converts it to png then saves both to disk.
     :param
     :return:
     """
     sets = requests.get('https://api.scryfall.com/sets').json()['data']
-    for set in sets[:40]:
+    small_sets = []
+    for set in sets:
+        if set['released_at'] > '2015-01-01' and set['released_at'] < '2019-05-01' and set['set_type'] in ['core', 'expansion']:
+            small_sets.append(set)
+    for set in small_sets:
         icon_uri = set['icon_svg_uri']
         set_name_svg = '{}.svg'.format(set['code'])
         svg_location = 'svg_set_images'
@@ -39,6 +43,6 @@ def get_all_cards_in_set(set_code):
         page += 1
         for card in response_all_cards.json()['data']:
             # be careful the multiverse_id is a list? not sure why.
-            card_tuple = (card['image_uris']['large'], card['multiverse_ids'])
+            card_tuple = (card['image_uris']['large'], card['multiverse_ids'], card['name'])
             card_tuples.append(card_tuple)
     return card_tuples
