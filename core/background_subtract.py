@@ -5,7 +5,7 @@ import requests
 from core.mtg_api import get_all_cards_in_set
 
 
-def find_card_using_subtraction(input_image, set_id):
+def find_card(input_image, set_id, use_cv2_cross_corr=False):
     cards = get_all_cards_in_set(set_id)
     card_results = {}
     len_cards = len(cards)
@@ -22,12 +22,15 @@ def find_card_using_subtraction(input_image, set_id):
         full_result = 0
         greyscale_resized_input_image = cv2.cvtColor(resized_input_image, cv2.COLOR_BGR2GRAY)
         greyscale_template_card_img = cv2.cvtColor(template_card_img, cv2.COLOR_BGR2GRAY)
-        for row in range(len(resized_input_image)):
-            for column in range(len(resized_input_image[row])):
-                intensity_result = greyscale_resized_input_image[row][column] - greyscale_template_card_img[row][column]
-                full_result += intensity_result
+        if use_cv2_cross_corr:
+            full_result = cv2.matchTemplate(greyscale_resized_input_image, greyscale_template_card_img, cv2.TM_CCORR_NORMED)
+        else:
+            for row in range(len(resized_input_image)):
+                for column in range(len(resized_input_image[row])):
+                    intensity_result = greyscale_resized_input_image[row][column] - greyscale_template_card_img[row][column]
+                    full_result += intensity_result
         processing += 1
         card_results[card_id] = full_result
         print("processing {} out of {}, card name: {}".format(processing, len_cards, card_name))
-    print(sorted(card_results.items(), key=lambda x: x[1]))
+    return card_results
 

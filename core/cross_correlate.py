@@ -41,8 +41,8 @@ def cross_correlate_change_to_binary_and_score(origin_image, set_image):
     return full_result
 
 
-def thresh_all_set_templates(crop_set_image_original):
-    height, width = crop_set_image_original.shape
+def thresh_all_set_templates(shape):
+    height, width = shape
     set_images_path = os.path.join('png_set_images')
     for set_image_path in os.listdir(set_images_path):
         set_image_memory = cv2.imread(os.path.join(set_images_path, set_image_path))
@@ -51,12 +51,16 @@ def thresh_all_set_templates(crop_set_image_original):
         thes, set_image_thresholded = cv2.threshold(set_image_resized, 50, 255, cv2.THRESH_BINARY)
         cv2.imwrite(os.path.join('thresh_resize_images', set_image_path), set_image_thresholded)
 
-def cross_correlate_all_set_images(crop_set_image_original):
+
+def cross_correlate_all_set_images(crop_set_image_original, use_cv2_cross_corr=False):
     all_image_name_score = {}
     set_images_path = os.path.join('thresh_resize_images')
     for set_image_path in os.listdir(set_images_path):
-        set_image_thresholded = cv2.imread(os.path.join(set_images_path, set_image_path), cv2.IMREAD_GRAYSCALE )
-        cc_result = cross_correlate_change_to_binary_and_score(crop_set_image_original, set_image_thresholded)
+        set_image_thresholded = cv2.imread(os.path.join(set_images_path, set_image_path), cv2.IMREAD_GRAYSCALE)
+        if use_cv2_cross_corr:
+            cc_result = cv2.matchTemplate(crop_set_image_original, set_image_thresholded, cv2.TM_CCORR_NORMED)
+        else:
+            cc_result = cross_correlate_change_to_binary_and_score(crop_set_image_original, set_image_thresholded)
         all_image_name_score[set_image_path] = cc_result
     return all_image_name_score
 

@@ -21,4 +21,7 @@ def get_confusion_matrix():
         all_rows.append(result_dict)
     confusion_matrix_df = pd.DataFrame(all_rows)
     confusion_matrix_df.rename(index=index_dict, inplace=True)
-    return confusion_matrix_df
+    ## I took the normalization code from here:
+    ## https://stackoverflow.com/questions/26414913/normalize-columns-of-pandas-data-frame
+    normalized_confusion_matrix_by_column_df = (confusion_matrix_df - confusion_matrix_df.min()) / (confusion_matrix_df.max() - confusion_matrix_df.min())
+    return normalized_confusion_matrix_by_column_df
