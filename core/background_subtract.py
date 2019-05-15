@@ -27,7 +27,7 @@ def find_card(input_image, set_id, use_cv2_cross_corr=False):
         else:
             for row in range(len(resized_input_image)):
                 for column in range(len(resized_input_image[row])):
-                    intensity_result = greyscale_resized_input_image[row][column] - greyscale_template_card_img[row][column]
+                    intensity_result = int(greyscale_resized_input_image[row][column]) - int(greyscale_template_card_img[row][column])
                     full_result += intensity_result
         processing += 1
         card_results[card_id] = full_result
