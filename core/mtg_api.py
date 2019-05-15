@@ -47,8 +47,11 @@ def get_all_cards_in_set(set_code):
         page += 1
         for card in response_all_cards.json()['data']:
             # be careful the multiverse_id is a list? not sure why.
-            card_tuple = (card['image_uris']['large'], card['multiverse_ids'], card['name'])
-            card_tuples.append(card_tuple)
+            try:
+                card_tuple = (card['image_uris']['large'], card['multiverse_ids'], card['name'])
+                card_tuples.append(card_tuple)
+            except KeyError as ke:
+                print("Could not process a card {}".format(ke))
     return card_tuples
 
 

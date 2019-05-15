@@ -49,8 +49,7 @@ class PreprocessorImg:
 
     def _find_set_image_alternative(self):
         """
-        We resize to 672x936 because that's what mtg provides as large resolution
-        https://scryfall.com/docs/api/images
+        We resize to 2000x1500
         :return:
         """
         resized_mtg_card = cv2.resize(self.mtg_just_card_grayscale, (2000, 1500))
